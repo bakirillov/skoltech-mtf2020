@@ -94,7 +94,7 @@ class NeuralTensorLayer(torch.nn.Module):
         
     def forward(self, X, transposed=False):
         
-        X = torch.Tensor(X)
+        #X = torch.Tensor(X)
         
         if self.rank_tucker == -1:
             result = torch.addmm(self.bias, X, self.order1_tens)
