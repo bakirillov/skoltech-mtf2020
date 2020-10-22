@@ -14,6 +14,22 @@ from torch.utils.data import Dataset
 #tl.set_backend('pytorch')
 
 
+import numpy as np
+import matplotlib.pyplot as plt
+import torch
+from torch import nn
+from tqdm.notebook import tqdm
+
+import tensorly as tl
+from tensorly.random import random_tucker
+from tensorly.tucker_tensor import tucker_to_tensor
+
+
+from torch.utils.data import Dataset
+
+#tl.set_backend('pytorch')
+
+
 class NeuralTensorLayer(torch.nn.Module):
     
     """
@@ -122,8 +138,53 @@ class NeuralTensorLayer(torch.nn.Module):
             acc = tl.tenalg.mode_dot(acc, X, 2)
             result += torch.einsum('iiik->ik', acc)
         
-        res = result.reshape((X.shape[0], self.output_dim))
-        return res
+        return tl.reshape(result, (X.shape[0], self.output_dim))
+
+    def get_orthogonality_loss(self):
+
+        if self.rank_tucker == -1:
+            return 0
+
+        loss = 0
+
+        for fact in self.order1_tens[1]:
+            loss += torch.sum((tl.dot(fact.T, fact) - torch.eye(fact.shape[1]).cuda()) ** 2)
+        
+        if self.order >= 2:
+            
+            for fact in self.order2_tens[1]:
+                loss += torch.sum((tl.dot(fact.T, fact) - torch.eye(fact.shape[1]).cuda()) ** 2)
+        
+        if self.order == 3:
+             
+            for fact in self.order3_tens[1]:
+                loss += torch.sum((tl.dot(fact.T, fact) - torch.eye(fact.shape[1]).cuda()) ** 2)
+
+        return loss
+
+
+class MOA_set(Dataset):
+    
+    def __init__(self, fn_X, fn_Y=None, cuda=True):
+        self.X = np.load(fn_X)
+        self.Y = None if not fn_Y else np.load(fn_Y)
+        self.Yn = True if not fn_Y else False
+        self.cuda = cuda
+        
+    def __len__(self):
+        return(self.X.shape[0])
+    
+    def __getitem__(self, ind):
+        x = torch.from_numpy(self.X[ind]).type(torch.FloatTensor)
+        if self.cuda:
+            x = x.cuda()
+        if not self.Yn:
+            y = torch.from_numpy(self.Y[ind]).type(torch.FloatTensor)
+            if self.cuda:
+                y = y.cuda()
+            return x, y
+        else:
+            return x
 
 
 
