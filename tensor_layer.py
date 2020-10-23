@@ -33,7 +33,7 @@ from torch.utils.data import Dataset
 class NeuralTensorLayer(torch.nn.Module):
     
     """
-    This is the class for 
+    This is the class for the tensor layer
     """
     
     def __init__(self, order, input_dim, output_dim, rank_tucker=-1,
