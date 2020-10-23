@@ -130,6 +130,5 @@ dmypy.json
 .pyre/
 
 # Data Files and Dirs
-data/
 *.npy
 *.pkl
