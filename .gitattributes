@@ -1,0 +1,7 @@
+data filter=lfs diff=lfs merge=lfs -text
+data/diabetes.csv filter=lfs diff=lfs merge=lfs -text
+data/train_features.csv filter=lfs diff=lfs merge=lfs -text
+data/train_targets_nonscored.csv filter=lfs diff=lfs merge=lfs -text
+data/train_targets_scored.csv filter=lfs diff=lfs merge=lfs -text
+data/test_features.csv filter=lfs diff=lfs merge=lfs -text
+data/sample_submission.csv filter=lfs diff=lfs merge=lfs -text
